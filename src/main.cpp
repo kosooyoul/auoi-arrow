@@ -4,6 +4,7 @@
 #include "MongoDBService.h"
 
 using namespace Pistache;
+using namespace Auoi;
 
 class HelloHandler: public Http::Handler {
 public:

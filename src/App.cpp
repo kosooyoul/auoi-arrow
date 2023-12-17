@@ -1,21 +1,25 @@
 #include "App.h"
 #include "MongoDBService.h"
 
-MongoDBService * App::mongoDBService = NULL;
+namespace Auoi {
 
-void App::initialize() {
-    const char *nameString = "auoi-arrow";
-    const char *dbNameString = "auoi_arrow";
-    const char *uriString = "mongodb://virtual.com:27017";
+    MongoDBService * App::mongoDBService = NULL;
 
-    App::mongoDBService = new MongoDBService();
-    App::mongoDBService->connect(uriString, nameString, dbNameString);
-}
+    void App::initialize() {
+        const char *nameString = "auoi-arrow";
+        const char *dbNameString = "auoi_arrow";
+        const char *uriString = "mongodb://virtual.com:27017";
 
-void App::destroy() {
-    App::mongoDBService->destroy();
-}
+        App::mongoDBService = new MongoDBService();
+        App::mongoDBService->connect(uriString, nameString, dbNameString);
+    }
 
-MongoDBService * App::getMongoDBService() {
-    return App::mongoDBService;
+    void App::destroy() {
+        App::mongoDBService->destroy();
+    }
+
+    MongoDBService * App::getMongoDBService() {
+        return App::mongoDBService;
+    }
+
 }
