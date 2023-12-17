@@ -4,20 +4,22 @@
 
 using namespace Pistache;
 
-int textMongoDB();
+int initMongoDB();
+int testMongoDB();
 
-class HelloHandler : public Http::Handler {
+class HelloHandler: public Http::Handler {
 public:
-
     HTTP_PROTOTYPE(HelloHandler)
 
     void onRequest(const Http::Request& request, Http::ResponseWriter response) override {
-        textMongoDB();
+        testMongoDB();
         response.send(Http::Code::Ok, "Hello, World!\n");
     }
 };
 
 int main() {
+    initMongoDB();
+
     Address addr(Ipv4::any(), Port(8080));
 
     auto opts = Http::Endpoint::options().threads(1);
@@ -27,92 +29,98 @@ int main() {
     server.serve();
 }
 
-int textMongoDB ()
-{
-   const char *uri_string = "mongodb://localhost:27017";
-   mongoc_uri_t *uri;
-   mongoc_client_t *client;
-   mongoc_database_t *database;
-   mongoc_collection_t *collection;
-   bson_t *command, reply, *insert;
-   bson_error_t error;
-   char *str;
-   bool retval;
-
+int initMongoDB () {
    /*
     * Required to initialize libmongoc's internals
     */
    mongoc_init ();
+}
 
-   /*
-    * Safely create a MongoDB URI object from the given string
-    */
-   uri = mongoc_uri_new_with_error (uri_string, &error);
-   if (!uri) {
-      fprintf (stderr,
-               "failed to parse URI: %s\n"
-               "error message:       %s\n",
-               uri_string,
-               error.message);
-      return EXIT_FAILURE;
-   }
+int testMongoDB () {
+    const char *uri_string = "mongodb://localhost:27017";
+    mongoc_uri_t *uri;
+    mongoc_client_t *client;
+    mongoc_database_t *database;
+    mongoc_collection_t *collection;
+    bson_t *command, reply, *insert;
+    bson_error_t error;
+    char *str;
+    bool retval;
 
-   /*
-    * Create a new client instance
-    */
-   client = mongoc_client_new_from_uri (uri);
-   if (!client) {
-      return EXIT_FAILURE;
-   }
+    // Note: into init func
+    /*
+     * Required to initialize libmongoc's internals
+     */
+    // mongoc_init ();
 
-   /*
-    * Register the application name so we can track it in the profile logs
-    * on the server. This can also be done from the URI (see other examples).
-    */
-   mongoc_client_set_appname (client, "connect-example");
+    /*
+     * Safely create a MongoDB URI object from the given string
+     */
+    uri = mongoc_uri_new_with_error (uri_string, &error);
+    if (!uri) {
+        fprintf (stderr,
+            "failed to parse URI: %s\n"
+            "error message: %s\n",
+            uri_string,
+            error.message);
+        return EXIT_FAILURE;
+    }
 
-   /*
-    * Get a handle on the database "db_name" and collection "coll_name"
-    */
-   database = mongoc_client_get_database (client, "db_name");
-   collection = mongoc_client_get_collection (client, "db_name", "coll_name");
+    /*
+     * Create a new client instance
+     */
+    client = mongoc_client_new_from_uri (uri);
+    if (!client) {
+        return EXIT_FAILURE;
+    }
 
-   /*
-    * Do work. This example pings the database, prints the result as JSON and
-    * performs an insert
-    */
-   command = BCON_NEW ("ping", BCON_INT32 (1));
+    /*
+     * Register the application name so we can track it in the profile logs
+     * on the server. This can also be done from the URI (see other examples).
+     */
+    mongoc_client_set_appname (client, "connect-example");
 
-   retval = mongoc_client_command_simple (
-      client, "admin", command, NULL, &reply, &error);
+    /*
+     * Get a handle on the database "db_name" and collection "coll_name"
+     */
+    database = mongoc_client_get_database (client, "db_name");
+    collection = mongoc_client_get_collection (client, "db_name", "coll_name");
 
-   if (!retval) {
-      fprintf (stderr, "%s\n", error.message);
-      return EXIT_FAILURE;
-   }
+    /*
+     * Do work. This example pings the database, prints the result as JSON and
+     * performs an insert
+     */
+    command = BCON_NEW ("ping", BCON_INT32 (1));
 
-   str = bson_as_json (&reply, NULL);
-   printf ("%s\n", str);
+    retval = mongoc_client_command_simple (client, "admin", command, NULL, &reply, &error);
 
-   insert = BCON_NEW ("hello", BCON_UTF8 ("world"));
+    if (!retval) {
+        fprintf (stderr, "%s\n", error.message);
+        return EXIT_FAILURE;
+    }
 
-   if (!mongoc_collection_insert_one (collection, insert, NULL, NULL, &error)) {
-      fprintf (stderr, "%s\n", error.message);
-   }
+    str = bson_as_json (&reply, NULL);
+    printf ("%s\n", str);
 
-   bson_destroy (insert);
-   bson_destroy (&reply);
-   bson_destroy (command);
-   bson_free (str);
+    insert = BCON_NEW ("hello", BCON_UTF8 ("world"));
 
-   /*
-    * Release our handles and clean up libmongoc
-    */
-   mongoc_collection_destroy (collection);
-   mongoc_database_destroy (database);
-   mongoc_uri_destroy (uri);
-   mongoc_client_destroy (client);
-   mongoc_cleanup ();
+    if (!mongoc_collection_insert_one (collection, insert, NULL, NULL, &error)) {
+        fprintf (stderr, "%s\n", error.message);
+    }
 
-   return EXIT_SUCCESS;
+    bson_destroy (insert);
+    bson_destroy (&reply);
+    bson_destroy (command);
+    bson_free (str);
+
+    /*
+     * Release our handles and clean up libmongoc
+     */
+    mongoc_collection_destroy (collection);
+    mongoc_database_destroy (database);
+    mongoc_uri_destroy (uri);
+    mongoc_client_destroy (client);
+    mongoc_cleanup ();
+
+    return EXIT_SUCCESS;
 }
