@@ -1,76 +1,22 @@
-#include <pistache/endpoint.h>
-#include <iostream>
-#include <mongoc/mongoc.h>
+#include "MongoDBService.h"
 
-using namespace Pistache;
-
-class MongoDBService {
-    private:
-        bool isConnected = false;
-        mongoc_uri_t *uri;
-        mongoc_client_t *client;
-        mongoc_database_t *database;
-
-        const char *uriString;
-        const char *nameString;
-        const char *dbNameString;
-
-    public:
-        MongoDBService();
-        ~MongoDBService();
-        void initialize();
-        void destroy();
-        void connect(const char *uriString, const char *nameString, const char *dbNameString);
-        void disconnect();
-
-        bool ping();
-        bool queryTest();
-};
-
-class App {
-    private:
-        static MongoDBService *mongoDBService;
-    public:
-        static void initialize();
-        static void destroy();
-        static MongoDBService * getMongoDBService();
-};
-
-/*
-    class App
-*/
-MongoDBService * App::mongoDBService = NULL;
-void App::initialize() {
-    const char *nameString = "auoi-arrow";
-    const char *dbNameString = "auoi_arrow";
-    const char *uriString = "mongodb://virtual.com:27017";
-
-    App::mongoDBService = new MongoDBService();
-    App::mongoDBService->connect(uriString, nameString, dbNameString);
-}
-void App::destroy() {
-    App::mongoDBService->destroy();
-}
-MongoDBService * App::getMongoDBService() {
-    return App::mongoDBService;
-}
-
-/*
-    class MongoDBService
-*/
 MongoDBService::MongoDBService() {
     this->initialize();
 }
+
 MongoDBService::~MongoDBService() {
     this->destroy();
 }
+
 void MongoDBService::initialize() {
     mongoc_init();
 }
+
 void MongoDBService::destroy() {
     this->disconnect();
     mongoc_cleanup();
 }
+
 void MongoDBService::connect(const char *uriString, const char *nameString, const char *dbNameString) {
     bson_error_t error;
 
@@ -109,6 +55,7 @@ void MongoDBService::connect(const char *uriString, const char *nameString, cons
     this->nameString = nameString;
     this->dbNameString = dbNameString;
 }
+
 void MongoDBService::disconnect() {
     if (this->isConnected != true) return;
 
@@ -117,6 +64,7 @@ void MongoDBService::disconnect() {
     mongoc_client_destroy(this->client);
     mongoc_cleanup();
 }
+
 bool MongoDBService::ping() {
     bson_t *command;
     bson_t reply;
@@ -147,6 +95,7 @@ bool MongoDBService::ping() {
 
     return isSucceed;
 }
+
 bool MongoDBService::queryTest() {
     mongoc_collection_t *collection;
 
@@ -184,31 +133,4 @@ bool MongoDBService::queryTest() {
     mongoc_collection_destroy(collection);
 
     return isSucceed;
-}
-
-
-class HelloHandler: public Http::Handler {
-public:
-    HTTP_PROTOTYPE(HelloHandler)
-
-    void onRequest(const Http::Request& request, Http::ResponseWriter response) override {
-        MongoDBService *mongoDBService = App::getMongoDBService();
-
-        mongoDBService->ping();
-        mongoDBService->queryTest();
-
-        response.send(Http::Code::Ok, "Hello, World!");
-    }
-};
-
-int main() {
-    App::initialize();
-
-    Address addr(Ipv4::any(), Port(8080));
-
-    auto opts = Http::Endpoint::options().threads(1);
-    Http::Endpoint server(addr);
-    server.init(opts);
-    server.setHandler(Http::make_handler<HelloHandler>());
-    server.serve();
 }
