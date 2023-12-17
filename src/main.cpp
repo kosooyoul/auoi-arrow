@@ -1,41 +1,9 @@
 #include <pistache/endpoint.h>
 #include <iostream>
+#include "App.h"
 #include "MongoDBService.h"
 
 using namespace Pistache;
-
-class App {
-    private:
-        static MongoDBService *mongoDBService;
-    public:
-        static void initialize();
-        static void destroy();
-        static MongoDBService * getMongoDBService();
-};
-
-/*
-    class App
-*/
-MongoDBService * App::mongoDBService = NULL;
-void App::initialize() {
-    const char *nameString = "auoi-arrow";
-    const char *dbNameString = "auoi_arrow";
-    const char *uriString = "mongodb://virtual.com:27017";
-
-    App::mongoDBService = new MongoDBService();
-    App::mongoDBService->connect(uriString, nameString, dbNameString);
-}
-void App::destroy() {
-    App::mongoDBService->destroy();
-}
-MongoDBService * App::getMongoDBService() {
-    return App::mongoDBService;
-}
-
-/*
-    class MongoDBService
-*/
-
 
 class HelloHandler: public Http::Handler {
 public:

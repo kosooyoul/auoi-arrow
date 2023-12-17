@@ -23,7 +23,7 @@ RUN apt-get install -y pkg-config libmongoc-dev
 COPY ./src/* .
 
 # C++ 소스 컴파일 및 실행 파일 생성
-RUN g++ -std=c++17 -o main main.cpp MongoDBService.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
+RUN g++ -std=c++17 -o main main.cpp App.cpp MongoDBService.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
 
 # 포트 설정
 EXPOSE 8080
