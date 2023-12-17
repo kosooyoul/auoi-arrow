@@ -13,13 +13,16 @@ RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:pistache+team/unstable
 RUN apt update
 RUN apt-get install -y g++ make cmake libcpprest-dev
-RUN apt install libpistache-dev -y
+RUN apt-get install libpistache-dev -y
+RUN apt-get install libmongoc-1.0-0 libbson-1.0-0 -y
+
+RUN apt-get install -y pkg-config libmongoc-1.0-0 libmongoc-dev
 
 # 필요한 파일 복사
 COPY main.cpp .
 
 # C++ 소스 컴파일 및 실행 파일 생성
-RUN g++ -std=c++17 -o main main.cpp -lpistache -pthread
+RUN g++ -std=c++17 -o main main.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
 
 # 포트 설정
 EXPOSE 8080
