@@ -27,8 +27,8 @@ namespace Auoi {
         return App::mongoDBService;
     }
 
-    void App::start() {
-        Address addr(Ipv4::any("0.0.0.0"), Port(8080));
+    void App::start(const char *acceptIp, const int port) {
+        Address addr(Ipv4::any(acceptIp), Port(port));
 
         auto opts = Http::Endpoint::options().threads(1);
         Http::Endpoint server(addr);

@@ -39,7 +39,7 @@ COPY --from=staged /usr/src/app ./
 COPY --from=staged /usr/lib/aarch64-linux-gnu/*.so* /usr/lib/aarch64-linux-gnu/
 
 # 포트 설정
-EXPOSE 8080
+EXPOSE 60000
 
 # 컨테이너 실행 시 실행할 명령
 # CMD ["./main"]

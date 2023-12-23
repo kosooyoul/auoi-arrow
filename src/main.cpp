@@ -7,5 +7,7 @@ using namespace Auoi;
 int main() {
     App::initialize();
 
-    App::start();
+    App::start("0.0.0.0", 60000);
+
+    App::destroy();
 }
