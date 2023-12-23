@@ -23,10 +23,10 @@ RUN apt-get install -y libpistache-dev
 RUN apt-get install -y pkg-config libmongoc-dev
 
 # 필요한 파일 복사
-COPY ./src/* .
+COPY ./src/ .
 
 # C++ 소스 컴파일 및 실행 파일 생성
-RUN g++ -std=c++17 -o main *.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
+RUN g++ -std=c++17 -o main *.cpp ./controller/*.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
 
 # 운영용 베이스 이미지 선택
 FROM ubuntu:20.04 as completed

@@ -11,7 +11,10 @@ namespace Auoi {
         public:
             static void initialize();
             static void destroy();
+
             static MongoDBService * getMongoDBService();
+
+            static void start();
 
     };
 

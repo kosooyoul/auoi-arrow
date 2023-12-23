@@ -18,6 +18,7 @@ namespace Auoi {
         public:
             MongoDBService();
             ~MongoDBService();
+
             void initialize();
             void destroy();
             void connect(const char *uriString, const char *nameString, const char *dbNameString);
