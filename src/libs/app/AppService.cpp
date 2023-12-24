@@ -10,7 +10,9 @@ using namespace Pistache;
 namespace Auoi
 {
 
-    AppService::AppService(const char *acceptIp, const unsigned int port): httpEndpoint(std::make_shared<Http::Endpoint>(Address(Ipv4::any(acceptIp), Port(port)))), desc("Auoi API", "0.0.0") {
+    AppService::AppService(const char *acceptIp, const unsigned int port):
+        httpEndpoint(std::make_shared<Http::Endpoint>(Address(Ipv4::any(acceptIp), Port(port)))),
+        desc("Auoi API", "0.0.0") {
         // Do nothing
     }
 

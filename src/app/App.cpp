@@ -1,5 +1,7 @@
 #include "./App.h"
-#include "./controller/AuoiController.h"
+#include "./controller/ArrowController.h"
+#include "./controller/HealthCheckController.h"
+#include "./controller/ShortcutController.h"
 
 #include "../libs/app/AppService.h"
 #include "../libs/mongodb/MongoDBService.h"
@@ -10,7 +12,9 @@ namespace Auoi {
 
     MongoDBService * App::mongoDBService = NULL;
 
-    AuoiController * App::auoiController = NULL;
+    ArrowController * App::arrowController = NULL;
+    HealthCheckController * App::healthCheckController = NULL;
+    ShortcutController * App::shortcutController = NULL;
 
     void App::initialize() {
         const char *nameString = "auoi-arrow";
@@ -20,12 +24,18 @@ namespace Auoi {
         App::mongoDBService = new MongoDBService();
         App::mongoDBService->connect(uriString, nameString, dbNameString);
 
-        App::auoiController = new AuoiController();
+        App::arrowController = new ArrowController();
+        App::healthCheckController = new HealthCheckController();
+        App::shortcutController = new ShortcutController();
     }
 
     void App::destroy() {
         App::mongoDBService->destroy();
         delete App::mongoDBService;
+
+        delete App::arrowController;
+        delete App::healthCheckController;
+        delete App::shortcutController;
     }
 
     MongoDBService * App::getMongoDBService() {
@@ -37,7 +47,9 @@ namespace Auoi {
 
         appService.init(threads);
 
-        App::auoiController->route(appService.getDescription());
+        App::arrowController->route(appService.getDescription());
+        App::healthCheckController->route(appService.getDescription());
+        App::shortcutController->route(appService.getDescription());
 
         appService.start();
     }

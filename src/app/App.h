@@ -1,6 +1,8 @@
 #pragma once
 
-#include "./controller/AuoiController.h"
+#include "./controller/ArrowController.h"
+#include "./controller/HealthCheckController.h"
+#include "./controller/ShortcutController.h"
 
 #include "../libs/mongodb/MongoDBService.h"
 
@@ -11,7 +13,9 @@ namespace Auoi {
         private:
             static MongoDBService *mongoDBService;
 
-            static AuoiController *auoiController;
+            static ArrowController *arrowController;
+            static HealthCheckController *healthCheckController;
+            static ShortcutController *shortcutController;
 
         public:
             static void initialize();
