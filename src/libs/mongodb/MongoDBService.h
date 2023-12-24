@@ -1,4 +1,5 @@
 #pragma once
+
 #include <mongoc/mongoc.h>
 
 namespace Auoi {

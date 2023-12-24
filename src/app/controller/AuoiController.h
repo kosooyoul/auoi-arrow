@@ -1,3 +1,5 @@
+#pragma once
+
 #include <pistache/description.h>
 #include <pistache/endpoint.h>
 #include <pistache/http.h>

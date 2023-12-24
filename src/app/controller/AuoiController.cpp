@@ -2,6 +2,7 @@
 #include <pistache/endpoint.h>
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
+
 #include "./AuoiController.h"
 #include "../App.h"
 #include "../../libs/mongodb/MongoDBService.h"
