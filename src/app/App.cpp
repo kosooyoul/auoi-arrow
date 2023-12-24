@@ -1,5 +1,5 @@
 #include "../libs/app/AppService.h"
-#include "../libs/app/AppRouter.h"
+#include "./AppRouter.h"
 #include "../libs/mongodb/MongoDBService.h"
 
 using namespace Pistache;

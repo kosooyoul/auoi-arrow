@@ -4,7 +4,7 @@
 #include <pistache/serializer/rapidjson.h>
 
 #include "./AppService.h"
-#include "./AppRouter.h"
+#include "../../app/AppRouter.h"
 
 using namespace Pistache;
 

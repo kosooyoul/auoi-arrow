@@ -5,7 +5,7 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
-#include "../../app/controller/AuoiController.h"
+#include "./controller/AuoiController.h"
 
 using namespace Pistache;
 
