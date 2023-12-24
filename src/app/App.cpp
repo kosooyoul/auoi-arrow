@@ -4,7 +4,7 @@
 #include <pistache/serializer/rapidjson.h>
 
 #include "./App.h"
-#include "./controller/HelloController.h"
+#include "./controller/AuoiController.h"
 #include "../libs/mongodb/MongoDBService.h"
 
 using namespace Pistache;
@@ -67,7 +67,7 @@ namespace Auoi {
 
                 versionPath
                     .route(desc.get("/shortcuts"), "Create an shortcut")
-                    .bind(&AppService::createShortcut, this)
+                    .bind(&AuoiController::createShortcut, this->auoiController)
                     .produces(MIME(Application, Json))
                     .consumes(MIME(Application, Json))
                     .response(Http::Code::Ok, "OK")
@@ -75,7 +75,7 @@ namespace Auoi {
 
                 desc
                     .route(desc.get("/:hash"), "Redirect matched url by hash")
-                    .bind(&AppService::redirectUrlByHash, this)
+                    .bind(&AuoiController::redirectUrlByHash, this->auoiController)
                     .produces(MIME(Application, Json))
                     .consumes(MIME(Application, Json))
                     .response(Http::Code::Ok, "OK")
@@ -83,34 +83,17 @@ namespace Auoi {
 
                 auto descPath = desc.path("/:hash");
                 descPath.parameter<Rest::Type::String>("hash", "The hash operate on");
-
             }
 
-            void healthCheck(const Rest::Request&, Http::ResponseWriter response)
-            {
+            void healthCheck(const Rest::Request&, Http::ResponseWriter response) {
                 response.send(Http::Code::Ok, "OK");
-            }
-
-            void createShortcut(const Rest::Request& request, Http::ResponseWriter response)
-            {
-                fprintf(stderr, "createShortcut");
-                response.send(Http::Code::Ok, "OK");
-            }
-
-            void redirectUrlByHash(const Rest::Request& request, Http::ResponseWriter response)
-            {
-                std::string hashString = request.param(":hash").as<std::string>();
-
-                if (hashString.length() != 8 || std::regex_match(hashString, std::regex("^[0-9a-zA-Z]+$")) == false) {
-                    response.send(Http::Code::Bad_Request, "Invalid Hash parameter");
-                }
-
-                response.send(Http::Code::Ok, "Valid Hash parameter: " + hashString);
             }
 
             std::shared_ptr<Http::Endpoint> httpEndpoint;
             Rest::Description desc;
             Rest::Router router;
+
+            AuoiController *auoiController = new AuoiController();
 
     };
 
