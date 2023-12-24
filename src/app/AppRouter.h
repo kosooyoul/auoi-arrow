@@ -5,25 +5,22 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
-#include "./AppRouter.h"
+#include "./controller/AuoiController.h"
 
 using namespace Pistache;
 
 namespace Auoi {
 
-    class AppService {
+    class AppRouter {
 
         private:
-            std::shared_ptr<Http::Endpoint> httpEndpoint;
-            Rest::Description desc;
-            Rest::Router router;
+            AuoiController *auoiController;
 
         public:
-            AppService(Address addr);
-            ~AppService();
+            AppRouter();
+            ~AppRouter();
 
-            void init(AppRouter *appRouter, size_t threads = 4);
-            void start();
+            void apply(Rest::Description *desc);
 
         private:
             void initializeRouter();

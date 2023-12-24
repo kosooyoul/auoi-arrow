@@ -30,8 +30,9 @@ namespace Auoi {
         Address addr(Ipv4::any(acceptIp), Port(port));
 
         AppService appService(addr);
+        AppRouter appRouter;
 
-        appService.init(threads);
+        appService.init(&appRouter, threads);
         appService.start();
     }
 }
