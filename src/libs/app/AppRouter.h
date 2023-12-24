@@ -5,7 +5,7 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
-#include "./controller/AuoiController.h"
+#include "../../app/controller/AuoiController.h"
 
 using namespace Pistache;
 
@@ -23,8 +23,6 @@ namespace Auoi {
             void apply(Rest::Description *desc);
 
         private:
-            void initializeRouter();
-
             void healthCheck(const Rest::Request&, Http::ResponseWriter response);
 
     };

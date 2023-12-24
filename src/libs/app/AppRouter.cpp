@@ -4,8 +4,9 @@
 #include <pistache/serializer/rapidjson.h>
 
 #include "./AppRouter.h"
-#include "./controller/AuoiController.h"
-#include "../libs/mongodb/MongoDBService.h"
+#include "../mongodb/MongoDBService.h"
+
+#include "../../app/controller/AuoiController.h"
 
 using namespace Pistache;
 
