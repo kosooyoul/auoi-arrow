@@ -4,13 +4,13 @@
 #include <pistache/serializer/rapidjson.h>
 
 #include "./AppService.h"
-#include "../../app/AppRouter.h"
 
 using namespace Pistache;
 
-namespace Auoi {
+namespace Auoi
+{
 
-    AppService::AppService(Address addr): httpEndpoint(std::make_shared<Http::Endpoint>(addr)), desc("Auoi API", "0.0.0") {
+    AppService::AppService(const char *acceptIp, const unsigned int port): httpEndpoint(std::make_shared<Http::Endpoint>(Address(Ipv4::any(acceptIp), Port(port)))), desc("Auoi API", "0.0.0") {
         // Do nothing
     }
 
@@ -18,11 +18,9 @@ namespace Auoi {
         // Do nothing
     }
 
-    void AppService::init(AppRouter *appRouter, size_t threads) {
+    void AppService::init(const size_t threads) {
         auto opts = Http::Endpoint::options().threads(static_cast<int>(threads));
         httpEndpoint->init(opts);
-
-        appRouter->apply(&desc);
     }
 
     void AppService::start() {
@@ -38,6 +36,10 @@ namespace Auoi {
 
         httpEndpoint->setHandler(router.handler());
         httpEndpoint->serve();
+    }
+
+    Rest::Description * AppService::getDescription() {
+        return &this->desc;
     }
 
 };

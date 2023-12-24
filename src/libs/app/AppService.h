@@ -5,8 +5,6 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
-#include "../../app/AppRouter.h"
-
 using namespace Pistache;
 
 namespace Auoi {
@@ -19,16 +17,13 @@ namespace Auoi {
             Rest::Router router;
 
         public:
-            AppService(Address addr);
+            AppService(const char *acceptIp, const unsigned int port);
             ~AppService();
 
-            void init(AppRouter *appRouter, size_t threads = 4);
+            void init(const size_t threads = 4);
             void start();
 
-        private:
-            void initializeRouter();
-
-            void healthCheck(const Rest::Request&, Http::ResponseWriter response);
+            Rest::Description * getDescription();
 
     };
 

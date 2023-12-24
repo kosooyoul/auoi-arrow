@@ -1,5 +1,7 @@
+#include "./App.h"
+#include "./controller/AuoiController.h"
+
 #include "../libs/app/AppService.h"
-#include "./AppRouter.h"
 #include "../libs/mongodb/MongoDBService.h"
 
 using namespace Pistache;
@@ -8,6 +10,8 @@ namespace Auoi {
 
     MongoDBService * App::mongoDBService = NULL;
 
+    AuoiController * App::auoiController = NULL;
+
     void App::initialize() {
         const char *nameString = "auoi-arrow";
         const char *dbNameString = "auoi_arrow";
@@ -15,6 +19,8 @@ namespace Auoi {
 
         App::mongoDBService = new MongoDBService();
         App::mongoDBService->connect(uriString, nameString, dbNameString);
+
+        App::auoiController = new AuoiController();
     }
 
     void App::destroy() {
@@ -27,12 +33,12 @@ namespace Auoi {
     }
 
     void App::start(const char *acceptIp, const unsigned int port, size_t threads) {
-        Address addr(Ipv4::any(acceptIp), Port(port));
+        AppService appService(acceptIp, port);
 
-        AppService appService(addr);
-        AppRouter appRouter;
+        appService.init(threads);
 
-        appService.init(&appRouter, threads);
+        App::auoiController->route(appService.getDescription());
+
         appService.start();
     }
 }

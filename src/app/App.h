@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./controller/AuoiController.h"
+
 #include "../libs/mongodb/MongoDBService.h"
 
 namespace Auoi {
@@ -8,6 +10,8 @@ namespace Auoi {
 
         private:
             static MongoDBService *mongoDBService;
+
+            static AuoiController *auoiController;
 
         public:
             static void initialize();
