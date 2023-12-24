@@ -14,7 +14,7 @@ namespace Auoi {
 
             static MongoDBService * getMongoDBService();
 
-            static void start(const char *acceptIp, const int port);
+            static void start(const char *acceptIp, const unsigned int port, size_t threads = 4);
 
     };
 

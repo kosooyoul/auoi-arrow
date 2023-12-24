@@ -1,4 +1,8 @@
+#include <pistache/description.h>
 #include <pistache/endpoint.h>
+#include <pistache/http.h>
+#include <pistache/serializer/rapidjson.h>
+
 #include "./App.h"
 #include "./controller/HelloController.h"
 #include "../libs/mongodb/MongoDBService.h"
@@ -6,6 +10,109 @@
 using namespace Pistache;
 
 namespace Auoi {
+
+    class AppService {
+
+        public:
+            AppService(Address addr)
+                : httpEndpoint(std::make_shared<Http::Endpoint>(addr))
+                , desc("Auoi API", "0.0.0")
+            { }
+
+            void init(size_t threads = 4)
+            {
+                auto opts = Http::Endpoint::options().threads(static_cast<int>(threads));
+                httpEndpoint->init(opts);
+
+                initializeRouter();
+            }
+
+            void start()
+            {
+                router.initFromDescription(desc);
+
+                Rest::Swagger swagger(desc);
+                swagger
+                    .uiPath("/docs")
+                    // .uiDirectory("/") // TODO
+                    .apiPath("/apis.json")
+                    .serializer(&Rest::Serializer::rapidJson)
+                    .install(router);
+
+                httpEndpoint->setHandler(router.handler());
+                httpEndpoint->serve();
+            }
+
+        private:
+            void initializeRouter() {
+                auto errorResponse = desc.response(Http::Code::Internal_Server_Error, "Internal Server Error #0");
+
+                desc
+                    .info()
+                    .license("Apache", "http://www.apache.org/licenses/LICENSE-2.0");
+
+                desc
+                    .route(desc.get("/health-check"))
+                    .bind(&AppService::healthCheck, this)
+                    .response(Http::Code::Ok, "OK")
+                    .hide();
+
+                desc
+                    .schemes(Rest::Scheme::Http)
+                    .basePath("/v1")
+                    .produces(MIME(Application, Json))
+                    .consumes(MIME(Application, Json));
+
+                auto versionPath = desc.path("/v1");
+
+                versionPath
+                    .route(desc.get("/shortcuts"), "Create an shortcut")
+                    .bind(&AppService::createShortcut, this)
+                    .produces(MIME(Application, Json))
+                    .consumes(MIME(Application, Json))
+                    .response(Http::Code::Ok, "OK")
+                    .response(errorResponse);
+
+                desc
+                    .route(desc.get("/:hash"), "Redirect matched url by hash")
+                    .bind(&AppService::redirectUrlByHash, this)
+                    .produces(MIME(Application, Json))
+                    .consumes(MIME(Application, Json))
+                    .response(Http::Code::Ok, "OK")
+                    .response(errorResponse);
+
+                auto descPath = desc.path("/:hash");
+                descPath.parameter<Rest::Type::String>("hash", "The hash operate on");
+
+            }
+
+            void healthCheck(const Rest::Request&, Http::ResponseWriter response)
+            {
+                response.send(Http::Code::Ok, "OK");
+            }
+
+            void createShortcut(const Rest::Request& request, Http::ResponseWriter response)
+            {
+                fprintf(stderr, "createShortcut");
+                response.send(Http::Code::Ok, "OK");
+            }
+
+            void redirectUrlByHash(const Rest::Request& request, Http::ResponseWriter response)
+            {
+                std::string hashString = request.param(":hash").as<std::string>();
+
+                if (hashString.length() != 8 || std::regex_match(hashString, std::regex("^[0-9a-zA-Z]+$")) == false) {
+                    response.send(Http::Code::Bad_Request, "Invalid Hash parameter");
+                }
+
+                response.send(Http::Code::Ok, "Valid Hash parameter: " + hashString);
+            }
+
+            std::shared_ptr<Http::Endpoint> httpEndpoint;
+            Rest::Description desc;
+            Rest::Router router;
+
+    };
 
     MongoDBService * App::mongoDBService = NULL;
 
@@ -27,13 +134,12 @@ namespace Auoi {
         return App::mongoDBService;
     }
 
-    void App::start(const char *acceptIp, const int port) {
+    void App::start(const char *acceptIp, const unsigned int port, size_t threads) {
         Address addr(Ipv4::any(acceptIp), Port(port));
 
-        auto opts = Http::Endpoint::options().threads(1);
-        Http::Endpoint server(addr);
-        server.init(opts);
-        server.setHandler(Http::make_handler<HelloController>());
-        server.serve();
+        AppService appService(addr);
+
+        appService.init(threads);
+        appService.start();
     }
 }

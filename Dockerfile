@@ -26,7 +26,7 @@ RUN apt-get install -y pkg-config libmongoc-dev
 COPY ./src/ .
 
 # C++ 소스 컴파일 및 실행 파일 생성
-RUN g++ -std=c++17 -o main ./main.cpp ./*/*.cpp ./*/*/*.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0)
+RUN g++ -std=c++17 -o main ./main.cpp ./*/*.cpp ./*/*/*.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0) -fno-stack-protector
 
 # 운영용 베이스 이미지 선택
 FROM ubuntu:20.04 as completed
