@@ -45,15 +45,18 @@ namespace Auoi {
 
             std::string url = jsonBody["url"];
             std::string hash = Utils::hash(url);
+            std::string hashBase62 = Utils::hexToBase62(hash);
 
             Logger::verbose("url = %s", url.c_str());
-            Logger::verbose("hash = %s", hash.c_str());
+            Logger::verbose("hash = %s", hashBase62.c_str());
 
             nlohmann::json jsonData = {
                 {"url", url},
-                {"hash", hash}
+                {"hash", hashBase62}
             };
             std::string jsonString = jsonData.dump();
+
+            // TODO: Upsert a shortcut
 
             response.headers().add<Http::Header::ContentType>(MIME(Application, Json));
             response.send(Http::Code::Ok, jsonString);
@@ -61,14 +64,6 @@ namespace Auoi {
             response.send(Http::Code::Bad_Request, "Invalid JSON format");
             return;
         }
-
-        // std::string a = "hello2";
-        // std::cout << "String: " << h << "\n";
-
-        // std::hash<char *> hasher;
-        // hasher(text);
-        // std::string ab = Utils::generateUUID();
-        // Logger::verbose("Called ShortcutController::uuid %s", ab.c_str());
     }
 
 };

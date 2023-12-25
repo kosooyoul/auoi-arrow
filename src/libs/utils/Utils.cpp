@@ -58,4 +58,29 @@ namespace Auoi {
         return ss.str();
     }
 
+    std::string Utils::hexToBase62(const std::string& hexString) {
+        // 16진수 문자에 대응하는 10진수 값
+        const std::string hexChars = "0123456789abcdef";
+
+        // 62진수 문자
+        const std::string base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        // 16진수 문자열을 10진수로 변환
+        uint64_t decimalValue = 0;
+        for (char hexChar : hexString) {
+            size_t hexIndex = hexChars.find(hexChar);
+            if (hexIndex != std::string::npos) {
+                decimalValue = decimalValue * 16 + hexIndex;
+            }
+        }
+
+        // 10진수를 62진수로 변환
+        std::string base62String;
+        do {
+            base62String = base62Chars[decimalValue % 62] + base62String;
+            decimalValue /= 62;
+        } while (decimalValue > 0);
+
+        return base62String.empty() ? "0" : base62String;
+    }
 }
