@@ -3,10 +3,17 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
+#include <iostream>
+#include <functional>
+#include <string>
+
+#include <nlohmann/json.hpp>
+
 #include "./ShortcutController.h"
 
 #include "../../libs/logger/Logger.h"
 #include "../../libs/mongodb/MongoDBService.h"
+#include "../../libs/utils/Utils.h"
 
 using namespace Pistache;
 
@@ -22,7 +29,7 @@ namespace Auoi {
 
         auto versionPath = desc->path("/v1");
 
-        versionPath.route(desc->get("/shortcuts"), "Create an shortcut")
+        versionPath.route(desc->post("/shortcuts"), "Create an shortcut")
             .bind(&ShortcutController::createShortcut, this)
             .produces(MIME(Application, Json))
             .consumes(MIME(Application, Json))
@@ -32,7 +39,36 @@ namespace Auoi {
 
     void ShortcutController::createShortcut(const Rest::Request& request, Http::ResponseWriter response) {
         Logger::verbose("Called ShortcutController::createShortcut");
-        response.send(Http::Code::Ok, "OK");
+
+        try {
+            auto jsonBody = nlohmann::json::parse(request.body());
+
+            std::string url = jsonBody["url"];
+            std::string hash = Utils::hash(url);
+
+            Logger::verbose("url = %s", url.c_str());
+            Logger::verbose("hash = %s", hash.c_str());
+
+            nlohmann::json jsonData = {
+                {"url", url},
+                {"hash", hash}
+            };
+            std::string jsonString = jsonData.dump();
+
+            response.headers().add<Http::Header::ContentType>(MIME(Application, Json));
+            response.send(Http::Code::Ok, jsonString);
+        } catch (const nlohmann::json::parse_error& e) {
+            response.send(Http::Code::Bad_Request, "Invalid JSON format");
+            return;
+        }
+
+        // std::string a = "hello2";
+        // std::cout << "String: " << h << "\n";
+
+        // std::hash<char *> hasher;
+        // hasher(text);
+        // std::string ab = Utils::generateUUID();
+        // Logger::verbose("Called ShortcutController::uuid %s", ab.c_str());
     }
 
 };

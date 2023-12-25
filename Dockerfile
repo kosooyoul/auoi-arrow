@@ -17,16 +17,20 @@ RUN apt-get update
 RUN apt-get install -y libcpprest-dev
 RUN apt-get install -y libpistache-dev
 
-# 몽고DB 라이브러리
+# 몽고DB 라이브러리 설치
 # RUN apt-get install -y pkg-config libmongoc-1.0-0 libmongoc-dev
 # RUN apt-get install -y libmongoc-1.0-0 libbson-1.0-0
 RUN apt-get install -y pkg-config libmongoc-dev
+
+# 유틸리티 라이브러리 설치
+RUN apt-get install -y libssl-dev
+RUN apt-get install -y nlohmann-json3-dev
 
 # 필요한 파일 복사
 COPY ./src/ .
 
 # C++ 소스 컴파일 및 실행 파일 생성
-RUN g++ -std=c++17 -o main ./main.cpp ./*/*.cpp ./*/*/*.cpp -lpistache -pthread $(pkg-config --libs --cflags libmongoc-1.0) -fno-stack-protector
+RUN g++ -std=c++17 -o main ./main.cpp ./*/*.cpp ./*/*/*.cpp -lpistache -lcrypto -pthread $(pkg-config --libs --cflags libmongoc-1.0) -fno-stack-protector
 
 # 운영용 베이스 이미지 선택
 FROM ubuntu:20.04 as completed
