@@ -35,7 +35,7 @@ FROM ubuntu:20.04 as completed
 WORKDIR /usr/src/app
 
 # 빌드 및 라이브러리 복사
-COPY --from=staged /usr/src/app ./
+COPY --from=staged /usr/src/app/main ./
 COPY --from=staged /usr/lib/aarch64-linux-gnu/*.so* /usr/lib/aarch64-linux-gnu/
 
 # 포트 설정
