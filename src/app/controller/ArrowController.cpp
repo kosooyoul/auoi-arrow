@@ -5,6 +5,7 @@
 
 #include "./ArrowController.h"
 
+#include "../../libs/logger/Logger.h"
 #include "../../libs/mongodb/MongoDBService.h"
 
 using namespace Pistache;
@@ -30,7 +31,7 @@ namespace Auoi {
     void ArrowController::redirectUrlByHash(const Rest::Request& request, Http::ResponseWriter response) {
         std::string hashString = request.param(":hash").as<std::string>();
 
-        fprintf(stderr, "redirectUrlByHash");
+        Logger::verbose("Called ArrowController::redirectUrlByHash");
 
         if (hashString.length() != 8 || std::regex_match(hashString, std::regex("^[0-9a-zA-Z]+$")) == false) {
             response.send(Http::Code::Bad_Request, "Invalid Hash parameter");

@@ -3,6 +3,7 @@
 #include <pistache/http.h>
 #include <pistache/serializer/rapidjson.h>
 
+#include "../../libs/logger/Logger.h"
 #include "./HealthCheckController.h"
 
 using namespace Pistache;
@@ -21,7 +22,7 @@ namespace Auoi {
     }
 
     void HealthCheckController::healthCheck(const Rest::Request&, Http::ResponseWriter response) {
-        fprintf(stderr, "healthCheck");
+        Logger::verbose("Called HealthCheckController::healthCheck");
         response.send(Http::Code::Ok, "OK");
     }
 

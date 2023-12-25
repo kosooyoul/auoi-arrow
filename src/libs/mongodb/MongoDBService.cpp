@@ -1,5 +1,7 @@
 #include "./MongoDBService.h"
 
+#include "../logger/Logger.h"
+
 namespace Auoi {
 
     MongoDBService::MongoDBService() {
@@ -22,15 +24,18 @@ namespace Auoi {
     void MongoDBService::connect(const char *uriString, const char *nameString, const char *dbNameString) {
         bson_error_t error;
 
+        Logger::info("Called MongoDBService::connect - %s", uriString);
+
         if (this->isConnected == true) return;
         this->isConnected = true;
+
 
         /*
         * Safely create a MongoDB URI object from the given string
         */
         this->uri = mongoc_uri_new_with_error(uriString, &error);
         if (!this->uri) {
-            fprintf(stderr, "failed to parse URI: %s\nerror message: %s\n", uriString, error.message);
+            Logger::error("Error MongoDBService::connect - %s", error.message);
             return;
         }
 
@@ -83,12 +88,13 @@ namespace Auoi {
 
             isSucceed = mongoc_client_command_simple(client, "admin", command, NULL, &reply, &error);
             if (!isSucceed) {
-                fprintf(stderr, "%s\n", error.message);
+                Logger::error("Error MongoDBService::ping - %s", error.message);
                 break;
             }
 
             str = bson_as_json(&reply, NULL);
-            printf("ping reply: %s\n", str);
+
+            Logger::verbose("Ok MongoDBService::ping - %s", str);
         } while (false);
 
         bson_destroy(&reply);
@@ -117,12 +123,13 @@ namespace Auoi {
 
             isSucceed = mongoc_collection_insert_one(collection, command, NULL, &reply, &error);
             if (!isSucceed) {
-                fprintf(stderr, "%s\n", error.message);
+                Logger::error("Error MongoDBService::ping - %s", error.message);
                 break;
             }
 
             str = bson_as_json(&reply, NULL);
-            printf("insert reply: %s\n", str);
+
+            Logger::verbose("Ok MongoDBService::queryTest - %s", str);
         } while (false);
 
         bson_destroy(&reply);

@@ -5,6 +5,7 @@
 
 #include "./ShortcutController.h"
 
+#include "../../libs/logger/Logger.h"
 #include "../../libs/mongodb/MongoDBService.h"
 
 using namespace Pistache;
@@ -32,7 +33,7 @@ namespace Auoi {
     }
 
     void ShortcutController::createShortcut(const Rest::Request& request, Http::ResponseWriter response) {
-        fprintf(stderr, "createShortcut");
+        Logger::verbose("Called ShortcutController::createShortcut");
         response.send(Http::Code::Ok, "OK");
     }
 
