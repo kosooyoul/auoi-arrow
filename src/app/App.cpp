@@ -46,6 +46,7 @@ namespace Auoi {
         AppService appService(acceptIp, port);
 
         appService.init(threads);
+        appService.setLisence("Apache", "http://www.apache.org/licenses/LICENSE-2.0");
 
         App::arrowController->route(appService.getDescription());
         App::healthCheckController->route(appService.getDescription());

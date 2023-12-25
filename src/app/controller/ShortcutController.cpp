@@ -13,8 +13,6 @@ using namespace Pistache;
 namespace Auoi {
 
     void ShortcutController::route(Rest::Description *desc) {
-        auto errorResponse = desc->response(Http::Code::Internal_Server_Error, "Internal Shortcut Server Error");
-
         desc->info().license("Apache", "http://www.apache.org/licenses/LICENSE-2.0");
 
         desc->schemes(Rest::Scheme::Http)
@@ -29,7 +27,7 @@ namespace Auoi {
             .produces(MIME(Application, Json))
             .consumes(MIME(Application, Json))
             .response(Http::Code::Ok, "OK")
-            .response(errorResponse);
+            .response(Http::Code::Internal_Server_Error, "Internal Server Error");
     }
 
     void ShortcutController::createShortcut(const Rest::Request& request, Http::ResponseWriter response) {

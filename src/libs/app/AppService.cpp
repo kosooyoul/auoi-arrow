@@ -25,6 +25,10 @@ namespace Auoi
         httpEndpoint->init(opts);
     }
 
+    void AppService::setLisence(const char *license, const char *url) {
+        desc.info().license(license, url);
+    }
+
     void AppService::start() {
         router.initFromDescription(desc);
 

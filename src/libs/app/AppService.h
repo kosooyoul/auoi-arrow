@@ -21,6 +21,8 @@ namespace Auoi {
             ~AppService();
 
             void init(const size_t threads = 4);
+            void setLisence(const char *license, const char *url);
+
             void start();
 
             Rest::Description * getDescription();
